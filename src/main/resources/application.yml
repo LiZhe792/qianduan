@@ -15,16 +15,19 @@ spring:
 #    url: jdbc:mysql://localhost:3306/web_db?allowPublicKeyRetrieval=true&useSSL=false
 #    username: root
 #    password: qlscadmin
-    url: jdbc:sqlite:/teach-2025/run/java.db
-    username: root
-    password: qlscadmin
-    driver-class-name: org.sqlite.JDBC
-  jpa:
-    hibernate:
-      dialect: org.hibernate.community.dialect.SQLiteDialect
-      hbm2ddl:
-        auto: create-drop
-      show-sql: true
+    url: jdbc:mysql://202.194.14.120:3306/java_db?allowPublicKeyRetrieval=true&useSSL=false
+    username: java_server
+    password: JavaServer2025@
+#    url: jdbc:sqlite:/teach-2025/run/java.db
+#    username: root
+#    password: qlscadmin
+#    driver-class-name: org.sqlite.JDBC
+#  jpa:
+#    hibernate:
+#      dialect: org.hibernate.community.dialect.SQLiteDialect
+#      hbm2ddl:
+#        auto: create-drop
+#      show-sql: true
   servlet:
     multipart:
       max-file-size: 200MB
