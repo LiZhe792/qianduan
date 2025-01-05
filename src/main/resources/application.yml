@@ -1,0 +1,58 @@
+
+security:
+  jwt:
+    secret-key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+    expiration-time: 86400000
+server:
+  port: 22222
+spring:
+#  threads:
+#    virtual:
+#      enabled: true
+  application:
+    name: java-server
+  datasource:
+    url: jdbc:mysql://localhost:3306/web_db?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: qlscadmin
+#    url: jdbc:sqlite:/teach/java2/data.db
+#    username: root
+#    password: qlscadmin
+#    driver-class-name: org.sqlite.JDBC
+#  jpa:
+#    hibernate:
+#      dialect: org.hibernate.community.dialect.SQLiteDialect
+#      hbm2ddl:
+#        auto: create-drop
+#      show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  jmx:
+    enabled:false
+  # Mail server properties
+  mail:
+    host: smtp.sdu.edu.cn
+    port: 25
+    username: xqli@sdu.edu.cn
+    password: 111
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+attach:
+  folder: /teach/
+logging:
+  config: classpath:loggback.xml
+
