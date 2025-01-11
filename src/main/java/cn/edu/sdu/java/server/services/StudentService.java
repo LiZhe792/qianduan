@@ -7,8 +7,6 @@ import cn.edu.sdu.java.server.repositorys.*;
 import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Cell;
@@ -67,8 +65,7 @@ public class StudentService {
         p = s.getPerson();
         if(p == null)
             return m;
-        m.put("studentId", s.getStudentId());
-        m.put("personId", p.getPersonId());
+        m.put("personId", s.getPersonId());
         m.put("num",p.getNum());
         m.put("name",p.getName());
         m.put("dept",p.getDept());
@@ -108,12 +105,12 @@ public class StudentService {
 
 
     public DataResponse studentDelete(DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");  //获取student_id值
-        studentId = null;
+        Integer personId = dataRequest.getInteger("personId");  //获取student_id值
+        personId = null;
         Student s = null;
         Optional<Student> op;
-        if (studentId != null) {
-            op = studentRepository.findById(studentId);   //查询获得实体对象
+        if (personId != null) {
+            op = studentRepository.findById(personId);   //查询获得实体对象
             if (op.isPresent()) {
                 s = op.get();
             }
@@ -132,11 +129,11 @@ public class StudentService {
 
 
     public DataResponse getStudentInfo(DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");
+        Integer personId = dataRequest.getInteger("personId");
         Student s = null;
         Optional<Student> op;
-        if (studentId != null) {
-            op = studentRepository.findById(studentId); //根据学生主键从数据库查询学生的信息
+        if (personId != null) {
+            op = studentRepository.findById(personId); //根据学生主键从数据库查询学生的信息
             if (op.isPresent()) {
                 s = op.get();
             }
@@ -145,17 +142,16 @@ public class StudentService {
     }
 
     public DataResponse studentEditSave(DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");
+        Integer personId = dataRequest.getInteger("personId");
         Map form = dataRequest.getMap("form"); //参数获取Map对象
         String num = CommonMethod.getString(form, "num");  //Map 获取属性的值
         Student s = null;
         Person p;
         User u;
         Optional<Student> op;
-        Integer personId;
         boolean isNew = false;
-        if (studentId != null) {
-            op = studentRepository.findById(studentId);  //查询对应数据库中主键为id的值的实体对象
+        if (personId != null) {
+            op = studentRepository.findById(personId);  //查询对应数据库中主键为id的值的实体对象
             if (op.isPresent()) {
                 s = op.get();
             }
@@ -173,15 +169,15 @@ public class StudentService {
             personRepository.saveAndFlush(p);  //插入新的Person记录
             String password = encoder.encode("123456");
             u = new User();
-            u.setPerson(p);
+            u.setPersonId(personId);
             u.setUserName(num);
             u.setPassword(password);
             u.setUserType(userTypeRepository.findByName(EUserType.ROLE_STUDENT));
             u.setCreateTime(DateTimeTool.parseDateTime(new Date()));
-            u.setCreatorId(CommonMethod.getUserId());
+            u.setCreatorId(CommonMethod.getPersonId());
             userRepository.saveAndFlush(u); //插入新的User记录
             s = new Student();   // 创建实体对象
-            s.setPerson(p);
+            s.setPersonId(personId);
             studentRepository.saveAndFlush(s);  //插入新的Student记录
             isNew = true;
         } else {
@@ -211,7 +207,7 @@ public class StudentService {
         s.setClassName(CommonMethod.getString(form, "className"));
         studentRepository.save(s);  //修改保存学生信息
         systemService.modifyLog(s,isNew);
-        return CommonMethod.getReturnData(s.getStudentId());  // 将studentId返回前端
+        return CommonMethod.getReturnData(s.getPersonId());  // 将personId返回前端
     }
 
     public List getStudentScoreList(List<Score> sList) {
@@ -268,8 +264,8 @@ public class StudentService {
     }
 
 
-    public List getStudentFeeList(Integer studentId) {
-        List<Fee> sList = feeRepository.findListByStudent(studentId);  // 查询某个学生消费记录集合
+    public List getStudentFeeList(Integer personId) {
+        List<Fee> sList = feeRepository.findListByStudent(personId);  // 查询某个学生消费记录集合
         List list = new ArrayList();
         if (sList == null || sList.size() == 0)
             return list;
@@ -285,39 +281,11 @@ public class StudentService {
     }
 
 
-    public DataResponse getStudentIntroduceData(DataRequest dataRequest) {
-        String username = CommonMethod.getUsername();
-        Optional<Student> sOp = studentRepository.findByPersonNum(username);  // 查询获得 Student对象
-        if (!sOp.isPresent())
-            return CommonMethod.getReturnMessageError("学生不存在！");
-        Student s = sOp.get();
-        Map info = getMapFromStudent(s);  // 查询学生信息Map对象
-        List<Score> sList = scoreRepository.findByStudentStudentId(s.getStudentId()); //获得学生成绩对象集合
-        Map data = new HashMap();
-        data.put("info", info);
-        data.put("scoreList", getStudentScoreList(sList));
-        data.put("markList", getStudentMarkList(sList));
-        data.put("feeList", getStudentFeeList(s.getStudentId()));
-        return CommonMethod.getReturnData(data);//将前端所需数据保留Map对象里，返还前端
-    }
 
 
-    public DataResponse saveStudentIntroduce(DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");
-        String introduce = dataRequest.getString("introduce");
-        Optional<Student> sOp = studentRepository.findById(studentId);
-        if (!sOp.isPresent())
-            return CommonMethod.getReturnMessageError("学生不存在！");
-        Student s = sOp.get();
-        Person p = s.getPerson();
-        p.setIntroduce(introduce);
-        personRepository.save(p);
-        return CommonMethod.getReturnMessageOK();
-    }
-
-    public String importFeeData(Integer studentId, InputStream in){
+    public String importFeeData(Integer personId, InputStream in){
         try {
-            Student student = studentRepository.findById(studentId).get();
+            Student student = studentRepository.findById(personId).get();
             XSSFWorkbook workbook = new XSSFWorkbook(in);  //打开Excl数据流
             XSSFSheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
@@ -338,7 +306,7 @@ public class StudentService {
                 day = cell.getStringCellValue();  //获取一行消费记录 日期 金额
                 cell = row.getCell(1);
                 money = cell.getStringCellValue();
-                fOp = feeRepository.findByStudentStudentIdAndDay(studentId, day);  //查询是否存在记录
+                fOp = feeRepository.findByStudentPersonIdAndDay(personId, day);  //查询是否存在记录
                 if (!fOp.isPresent()) {
                     f = new Fee();
                     f.setDay(day);
@@ -363,10 +331,10 @@ public class StudentService {
     }
 
     public DataResponse importFeeData(@RequestBody byte[] barr,
-                                      String studentIdStr
+                                      String personIdStr
                                       ) {
-        Integer studentId =  Integer.parseInt(studentIdStr);
-        String msg = importFeeData(studentId,new ByteArrayInputStream(barr));
+        Integer personId =  Integer.parseInt(personIdStr);
+        String msg = importFeeData(personId,new ByteArrayInputStream(barr));
         if(msg == null)
             return CommonMethod.getReturnMessageOK();
         else
@@ -434,18 +402,6 @@ public class StudentService {
 
     }
 
-    public ResponseEntity<StreamingResponseBody> getStudentIntroducePdf( DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");
-        Student s = studentRepository.getById(studentId);  //查询获得Student对象
-        Map info = getMapFromStudent(s); //获得学生信息
-        String content = (String) info.get("introduce");  // 个人简历的HTML字符串
-        content = CommonMethod.addHeadInfo(content, "<style> html { font-family: \"SourceHanSansSC\", \"Open Sans\";}  </style> <meta charset='UTF-8' />  <title>Insert title here</title>");  // 插入由HTML转换PDF需要的头信息
-        System.out.println(content);
-        content = CommonMethod.removeErrorString(content, "&nbsp;", "style=\"font-family: &quot;&quot;;\""); //删除无法转化不合法的HTML标签
-        content = CommonMethod.replaceNameValue(content, info); //将HTML中标记串${name}等替换成学生实际的信息
-        return baseService.getPdfDataFromHtml(content); //生成学生简历PDF二进制数据
-    }
-
     public DataResponse getStudentPageData(DataRequest dataRequest) {
         String numName = dataRequest.getString("numName");
         Integer cPage = dataRequest.getCurrentPage();
@@ -476,179 +432,20 @@ public class StudentService {
     }
 
 
-    public byte[] getStudentIntroduceItextPdfData(Integer studentId) {
-        byte data[] = null;
-        try {
-            Map<String, Object> map = new HashMap<>();
-            //设置纸张规格为A4纸
-            Rectangle rect = new Rectangle(PageSize.A4);
-            //创建文档实例
-            Document doc = new Document(rect);
-            //添加中文字体
-            BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-            //设置字体样式
-            Font textFont = new Font(bfChinese, 11, Font.NORMAL); //正常
-            //Font redTextFont = new Font(bfChinese,11,Font.NORMAL,Color.RED); //正常,红色
-            Font boldFont = new Font(bfChinese, 11, Font.BOLD); //加粗
-            //Font redBoldFont = new Font(bfChinese,11,Font.BOLD,Color.RED); //加粗,红色
-            Font firsetTitleFont = new Font(bfChinese, 22, Font.BOLD); //一级标题
-            Font secondTitleFont = new Font(bfChinese, 15, Font.BOLD, CMYKColor.BLUE); //二级标题
-            Font underlineFont = new Font(bfChinese, 11, Font.UNDERLINE); //下划线斜体
-            //设置字体
-            Font FontChinese24 = new Font(bfChinese, 24, Font.BOLD);
-            Font FontChinese18 = new Font(bfChinese, 18, Font.BOLD);
-            Font FontChinese16 = new Font(bfChinese, 16, Font.BOLD);
-            Font FontChinese12 = new Font(bfChinese, 12, Font.NORMAL);
-            Font FontChinese11Bold = new Font(bfChinese, 11, Font.BOLD);
-            Font FontChinese11 = new Font(bfChinese, 11, Font.ITALIC);
-            Font FontChinese11Normal = new Font(bfChinese, 11, Font.NORMAL);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            //设置要导出的pdf的标题
-            String title = "霸道流氓气质";
-            PdfWriter.getInstance(doc, out);
-            doc.open();
-            doc.newPage();
-            //新建段落
-            //使用二级标题 颜色为蓝色
-            Paragraph p1 = new Paragraph("二级标题", secondTitleFont);
-            //设置行高
-            p1.setLeading(0);
-            //设置标题居中
-            p1.setAlignment(Element.ALIGN_CENTER);
-            //将段落添加到文档上
-            doc.add(p1);
-            //设置一个空的段落，行高为18  什么内容都不显示
-            Paragraph blankRow1 = new Paragraph(18f, " ", FontChinese11);
-            doc.add(blankRow1);
-            //新建表格 列数为2
-            PdfPTable table1 = new PdfPTable(2);
-            //给表格设置宽度
-            int width1[] = {80, 60};
-            table1.setWidths(width1);
-            //新建单元格
-            String name = "霸道";
-            String gender = "男";
-            //给单元格赋值 每个单元格为一个段落，每个段落的字体为加粗
-            PdfPCell cell11 = new PdfPCell(new Paragraph("姓名：  " + name, boldFont));
-            PdfPCell cell12 = new PdfPCell(new Paragraph("性别：  " + gender, boldFont));
-            //设置单元格边框为0
-            cell11.setBorder(0);
-            cell12.setBorder(0);
-            table1.addCell(cell11);
-            table1.addCell(cell12);
-            doc.add(table1);
-            PdfPTable table3 = new PdfPTable(2);
-            table3.setWidths(width1);
-            PdfPCell cell15 = new PdfPCell(new Paragraph("博客主页： https://me.csdn.net/BADAO_LIUMANG_QIZHI  ", boldFont));
-            PdfPCell cell16 = new PdfPCell(new Paragraph("当前时间：  " + DateTimeTool.parseDateTime(new Date(), "yyy_MM_dd"), boldFont));
-            cell15.setBorder(0);
-            cell16.setBorder(0);
-            table3.addCell(cell15);
-            table3.addCell(cell16);
-            doc.add(table3);
-            doc.close();
-            return out.toByteArray();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public ResponseEntity<StreamingResponseBody> getStudentIntroduceItextPdf(DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");
-        return CommonMethod.getByteDataResponseBodyPdf(getStudentIntroduceItextPdfData(studentId));
-    }
-
-    public void exportPdfServlet(Long orderId, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //设置响应格式等
-        response.setContentType("application/pdf");
-        response.setHeader("Expires", "0");
-        response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-        response.setHeader("Pragma", "public");
-        Map<String, Object> map = new HashMap<>();
-        //设置纸张规格为A4纸
-        Rectangle rect = new Rectangle(PageSize.A4);
-        //创建文档实例
-        Document doc = new Document(rect);
-        //添加中文字体
-        BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-        //设置字体样式
-        Font textFont = new Font(bfChinese, 11, Font.NORMAL); //正常
-        //Font redTextFont = new Font(bfChinese,11,Font.NORMAL,Color.RED); //正常,红色
-        Font boldFont = new Font(bfChinese, 11, Font.BOLD); //加粗
-        //Font redBoldFont = new Font(bfChinese,11,Font.BOLD,Color.RED); //加粗,红色
-        Font firsetTitleFont = new Font(bfChinese, 22, Font.BOLD); //一级标题
-        Font secondTitleFont = new Font(bfChinese, 15, Font.BOLD, CMYKColor.BLUE); //二级标题
-        Font underlineFont = new Font(bfChinese, 11, Font.UNDERLINE); //下划线斜体
-        //设置字体
-        Font FontChinese24 = new Font(bfChinese, 24, Font.BOLD);
-        Font FontChinese18 = new Font(bfChinese, 18, Font.BOLD);
-        Font FontChinese16 = new Font(bfChinese, 16, Font.BOLD);
-        Font FontChinese12 = new Font(bfChinese, 12, Font.NORMAL);
-        Font FontChinese11Bold = new Font(bfChinese, 11, Font.BOLD);
-        Font FontChinese11 = new Font(bfChinese, 11, Font.ITALIC);
-        Font FontChinese11Normal = new Font(bfChinese, 11, Font.NORMAL);
-
-        //设置要导出的pdf的标题
-        String title = "霸道流氓气质";
-        response.setHeader("Content-disposition", "attachment; filename=".concat(String.valueOf(URLEncoder.encode(title + ".pdf", "UTF-8"))));
-        OutputStream out = response.getOutputStream();
-        PdfWriter.getInstance(doc, out);
-        doc.open();
-        doc.newPage();
-        //新建段落
-        //使用二级标题 颜色为蓝色
-        Paragraph p1 = new Paragraph("二级标题", secondTitleFont);
-        //设置行高
-        p1.setLeading(0);
-        //设置标题居中
-        p1.setAlignment(Element.ALIGN_CENTER);
-        //将段落添加到文档上
-        doc.add(p1);
-        //设置一个空的段落，行高为18  什么内容都不显示
-        Paragraph blankRow1 = new Paragraph(18f, " ", FontChinese11);
-        doc.add(blankRow1);
-        //新建表格 列数为2
-        PdfPTable table1 = new PdfPTable(2);
-        //给表格设置宽度
-        int width1[] = {80, 60};
-        table1.setWidths(width1);
-        //新建单元格
-        String name = "霸道";
-        String gender = "男";
-        //给单元格赋值 每个单元格为一个段落，每个段落的字体为加粗
-        PdfPCell cell11 = new PdfPCell(new Paragraph("姓名：  " + name, boldFont));
-        PdfPCell cell12 = new PdfPCell(new Paragraph("性别：  " + gender, boldFont));
-        //设置单元格边框为0
-        cell11.setBorder(0);
-        cell12.setBorder(0);
-        table1.addCell(cell11);
-        table1.addCell(cell12);
-        doc.add(table1);
-        PdfPTable table3 = new PdfPTable(2);
-        table3.setWidths(width1);
-        PdfPCell cell15 = new PdfPCell(new Paragraph("博客主页： https://me.csdn.net/BADAO_LIUMANG_QIZHI  ", boldFont));
-        PdfPCell cell16 = new PdfPCell(new Paragraph("当前时间：  " + DateTimeTool.parseDateTime(new Date(), "yyy_MM_dd"), boldFont));
-        cell15.setBorder(0);
-        cell16.setBorder(0);
-        table3.addCell(cell15);
-        table3.addCell(cell16);
-        doc.add(table3);
-        doc.close();
-    }
 
     /*
         FamilyMember
      */
     public DataResponse getFamilyMemberList(DataRequest dataRequest) {
-        Integer studentId = dataRequest.getInteger("studentId");
-        List<FamilyMember> fList = familyMemberRepository.findByStudentStudentId(studentId);
+        Integer personId = dataRequest.getInteger("personId");
+        List<FamilyMember> fList = familyMemberRepository.findByStudentPersonId(personId);
         List dataList = new ArrayList();
         Map m;
         if (fList != null) {
             for (FamilyMember f : fList) {
                 m = new HashMap();
                 m.put("memberId", f.getMemberId());
-                m.put("studentId", f.getStudent().getStudentId());
+                m.put("personId", f.getStudent().getPersonId());
                 m.put("relation", f.getRelation());
                 m.put("name", f.getName());
                 m.put("gender", f.getGender());
@@ -662,7 +459,7 @@ public class StudentService {
 
     public DataResponse familyMemberSave(DataRequest dataRequest) {
         Map form = dataRequest.getMap("form");
-        Integer studentId = CommonMethod.getInteger(form,"studentId");
+        Integer personId = CommonMethod.getInteger(form,"personId");
         Integer memberId = CommonMethod.getInteger(form,"memberId");
         Optional<FamilyMember> op;
         FamilyMember f = null;
@@ -674,7 +471,7 @@ public class StudentService {
         }
         if(f== null) {
             f = new FamilyMember();
-            f.setStudent(studentRepository.findById(studentId).get());
+            f.setStudent(studentRepository.findById(personId).get());
         }
         f.setRelation(CommonMethod.getString(form,"relation"));
         f.setName(CommonMethod.getString(form,"name"));
@@ -697,9 +494,9 @@ public class StudentService {
 
 
     public DataResponse importFeeDataWeb(Map request,MultipartFile file) {
-        Integer studentId = CommonMethod.getInteger(request, "studentId");
+        Integer personId = CommonMethod.getInteger(request, "personId");
         try {
-            String msg= importFeeData(studentId,file.getInputStream());
+            String msg= importFeeData(personId,file.getInputStream());
             if(msg == null)
                 return CommonMethod.getReturnMessageOK();
             else

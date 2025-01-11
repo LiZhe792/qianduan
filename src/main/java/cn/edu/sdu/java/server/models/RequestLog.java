@@ -1,7 +1,7 @@
 package cn.edu.sdu.java.server.models;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(	name = "request_log",

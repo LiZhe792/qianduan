@@ -1,6 +1,7 @@
 package cn.edu.sdu.java.server.payload.request;
 
-import javax.validation.constraints.NotBlank;
+
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * LoginRequest 登录请求数据类

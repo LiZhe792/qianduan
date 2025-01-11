@@ -25,10 +25,8 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
     @Query(value = "from Student where ?1='' or person.num like %?1% or person.name like %?1% ")
     List<Student> findStudentListByNumName(String numName);
 
-    @Query(value="select s from Student s, User u where u.person.personId = s.person.personId and u.userId=?1")
-    Optional<Student> findByUserId(Integer userId);
 
     @Query(value = "from Student where ?1='' or person.num like %?1% or person.name like %?1% ",
-            countQuery = "SELECT count(studentId) from Student where ?1='' or person.num like %?1% or person.name like %?1% ")
+            countQuery = "SELECT count(personId) from Student where ?1='' or person.num like %?1% or person.name like %?1% ")
     Page<Student> findStudentPageByNumName(String numName,  Pageable pageable);
 }

@@ -1,7 +1,8 @@
 package cn.edu.sdu.java.server.models;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
+
 /**
  * MenuInfo 菜单表实体类  保存菜单的的基本信息信息， 数据库表名 menu
  * Integer id 菜单表  menu 主键 id

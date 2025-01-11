@@ -6,6 +6,7 @@ import cn.edu.sdu.java.server.payload.response.MyTreeNode;
 import cn.edu.sdu.java.server.payload.response.OptionItemList;
 import cn.edu.sdu.java.server.services.BaseService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -242,18 +242,6 @@ public class BaseController {
        return baseService.htmlGetBaseHtmlPage(request);
     }
 
-    /**
-     * 获取PDF 数据，用于前端PDFView显示，
-     * 前台请求参数  htmlCount 获取原始的前端传送后端保存的Html的主键
-     * 返回前端 PDF数据的二进制数据流， 系统将html转换为PDF格式数据
-     *
-     * @return
-     */
-
-    @PostMapping("/getPdfData")
-    public ResponseEntity<StreamingResponseBody> getPdfData(@Valid @RequestBody DataRequest dataRequest) {
-        return baseService.getPdfData(dataRequest);
-    }
 
 
     //  Web 请求

@@ -5,13 +5,13 @@ import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.services.StudentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -62,7 +62,7 @@ public class StudentController {
      * studentDelete 删除学生信息Web服务 Student页面的列表里点击删除按钮则可以删除已经存在的学生信息， 前端会将该记录的id 回传到后端，方法从参数获取id，查出相关记录，调用delete方法删除
      * 这里注意删除顺序，应为user关联person,Student关联Person 所以要先删除Student,User，再删除Person
      *
-     * @param dataRequest 前端studentId 药删除的学生的主键 student_id
+     * @param dataRequest 前端personId 要删除的学生的主键 person_id
      * @return 正常操作
      */
 
@@ -74,8 +74,8 @@ public class StudentController {
     /**
      * getStudentInfo 前端点击学生列表时前端获取学生详细信息请求服务
      *
-     * @param dataRequest 从前端获取 studentId 查询学生信息的主键 student_id
-     * @return 根据studentId从数据库中查出数据，存在Map对象里，并返回前端
+     * @param dataRequest 从前端获取 personId 查询学生信息的主键 person_id
+     * @return 根据personId从数据库中查出数据，存在Map对象里，并返回前端
      */
 
     @PostMapping("/getStudentInfo")
@@ -88,7 +88,7 @@ public class StudentController {
      * studentEditSave 前端学生信息提交服务
      * 前端把所有数据打包成一个Json对象作为参数传回后端，后端直接可以获得对应的Map对象form, 再从form里取出所有属性，复制到
      * 实体对象里，保存到数据库里即可，如果是添加一条记录， id 为空，这是先 new Person, User,Student 计算新的id， 复制相关属性，保存，如果是编辑原来的信息，
-     * studentId不为空。则查询出实体对象，复制相关属性，保存后修改数据库信息，永久修改
+     * personId不为空。则查询出实体对象，复制相关属性，保存后修改数据库信息，永久修改
      *
      * @return 新建修改学生的主键 student_id 返回前端
      */
@@ -115,52 +115,25 @@ public class StudentController {
     /**
      * getStudentFeeList 获取学生的消费Map对象列表集合
      *
-     * @param studentId
+     * @param personId
      * @return
      */
-
-    /**
-     * getStudentIntroduceData 前端获取学生个人简历数据请求服务
-     *
-     * @param dataRequest 从前端获取 studentId 查询学生信息的主键 student_id
-     * @return 根据studentId从数据库中查出相关数据，存在Map对象里，并返回前端
-     */
-
-    @PostMapping("/getStudentIntroduceData")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DataResponse getStudentIntroduceData(@Valid @RequestBody DataRequest dataRequest) {
-        return studentService.getStudentIntroduceData(dataRequest);
-    }
-
-    /**
-     * saveStudentIntroduce 前端学生个人简介信息introduce提交服务
-     *
-     * @param dataRequest 从前端获取 studentId student表 student_id introduce 学生个人简介信息
-     * @return 操作正常
-     */
-
-    @PostMapping("/saveStudentIntroduce")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DataResponse saveStudentIntroduce(@Valid @RequestBody DataRequest dataRequest) {
-        return studentService.saveStudentIntroduce(dataRequest);
-    }
-
 
     /**
      * importFeeData 前端上传消费流水Excl表数据服务
      *
      * @param barr         文件二进制数据
      * @param uploader     上传者
-     * @param studentIdStr student 主键
+     * @param personIdStr student 主键
      * @param fileName     前端上传的文件名
      * @return
      */
     @PostMapping(path = "/importFeeData")
     public DataResponse importFeeData(@RequestBody byte[] barr,
                                       @RequestParam(name = "uploader") String uploader,
-                                      @RequestParam(name = "studentId") String studentIdStr,
+                                      @RequestParam(name = "personId") String personIdStr,
                                       @RequestParam(name = "fileName") String fileName) {
-        return studentService.importFeeData(barr, studentIdStr);
+        return studentService.importFeeData(barr, personIdStr);
     }
 
     /**
@@ -175,33 +148,11 @@ public class StudentController {
         return studentService.getStudentListExcl(dataRequest);
     }
 
-    /**
-     * getStudentIntroducePdf 生成获取个人简历的PDF数据流服务
-     *
-     * @param dataRequest studentId 学生主键
-     * @return 返回PDF文件二进制数据
-     */
-    @PostMapping("/getStudentIntroducePdf")
-    public ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(@Valid @RequestBody DataRequest dataRequest) {
-        return studentService.getStudentIntroducePdf(dataRequest);
-    }
 
     @PostMapping("/getStudentPageData")
     @PreAuthorize(" hasRole('ADMIN')")
     public DataResponse getStudentPageData(@Valid @RequestBody DataRequest dataRequest) {
         return studentService.getStudentPageData(dataRequest);
-    }
-
-
-
-    @PostMapping("/getStudentIntroduceItextPdf")
-    public ResponseEntity<StreamingResponseBody> getStudentIntroduceItextPdf(@Valid @RequestBody DataRequest dataRequest) {
-        return studentService.getStudentIntroduceItextPdf(dataRequest);
-    }
-
-    public void exportPdfServlet(Long orderId, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //设置响应格式等
-        studentService.exportPdfServlet(orderId, request, response);
     }
 
     /*

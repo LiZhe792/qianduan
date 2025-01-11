@@ -6,49 +6,24 @@ security:
 server:
   port: 22222
 spring:
-#  threads:
-#    virtual:
-#      enabled: true
   application:
     name: java-server
   datasource:
-#    url: jdbc:mysql://localhost:3306/web_db?allowPublicKeyRetrieval=true&useSSL=false
-#    username: root
-#    password: qlscadmin
     url: jdbc:mysql://202.194.14.120:3306/java_db?allowPublicKeyRetrieval=true&useSSL=false
     username: java_server
     password: JavaServer2025@
-#    url: jdbc:sqlite:/teach-2025/run/java.db
-#    username: root
-#    password: qlscadmin
-#    driver-class-name: org.sqlite.JDBC
-#  jpa:
-#    hibernate:
-#      dialect: org.hibernate.community.dialect.SQLiteDialect
-#      hbm2ddl:
-#        auto: create-drop
-#      show-sql: true
+#    url: jdbc:mysql://202.194.14.120:3306/java_1_01?allowPublicKeyRetrieval=true&useSSL=false
+#    username: java_1_01
+#    password: JavaP101@
+  jpa:
+    generate-ddl: true
+    hibernate.ddl-auto: update
   servlet:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
   jmx:
     enabled:false
-  # Mail server properties
-  mail:
-    host: smtp.sdu.edu.cn
-    port: 25
-    username: xqli@sdu.edu.cn
-    password: 111
-    properties:
-      mail:
-        smtp:
-          auth: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-          starttls:
-            enable: true
   http:
     encoding:
       charset: UTF-8

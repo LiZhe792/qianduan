@@ -83,7 +83,7 @@ public class SystemService {
             l.setType("1");
         l.setInfo(info);
         l.setOperateTime(DateTimeTool.parseDateTime(new Date()));
-        l.setOperatorId(CommonMethod.getUserId());
+        l.setOperatorId(CommonMethod.getPersonId());
         modifyLogRepository.save(l);
     }
 }

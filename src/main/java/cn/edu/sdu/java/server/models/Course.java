@@ -2,10 +2,9 @@ package cn.edu.sdu.java.server.models;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
 
 /**
  * Course 课程表实体类  保存课程的的基本信息信息，

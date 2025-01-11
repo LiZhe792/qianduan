@@ -15,10 +15,8 @@ import cn.edu.sdu.java.server.repositorys.UserRepository;
 import cn.edu.sdu.java.server.repositorys.UserTypeRepository;
 import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
-import com.openhtmltopdf.extend.FSSupplier;
-import com.openhtmltopdf.extend.impl.FSDefaultCacheStore;
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -32,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import javax.validation.Valid;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -47,7 +44,6 @@ public class BaseService {
     private final MenuInfoRepository menuInfoRepository; //菜单数据操作自动注入
     private final DictionaryInfoRepository dictionaryInfoRepository;  //数据字典数据操作自动注入
     private final UserTypeRepository userTypeRepository;   //用户类型数据操作自动注入
-    private FSDefaultCacheStore fSDefaultCacheStore = new FSDefaultCacheStore();
 
     public BaseService(ResourceLoader resourceLoader,PasswordEncoder encoder, UserRepository userRepository, MenuInfoRepository menuInfoRepository, DictionaryInfoRepository dictionaryInfoRepository, UserTypeRepository userTypeRepository) {
         this.resourceLoader = resourceLoader;
@@ -133,39 +129,6 @@ public class BaseService {
         return node;
     }
 
-    /**
-     * 将HTML的字符串转换成PDF文件，返回前端的PDF文件二进制数据流数据流
-     * @param htmlContent  HTML 字符流
-     * @return PDF数据流兑现
-     */
-    public ResponseEntity<StreamingResponseBody> getPdfDataFromHtml(String htmlContent) {
-        try {
-            PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.withHtmlContent(htmlContent, null);
-            builder.useFastMode();
-            builder.useCacheStore(PdfRendererBuilder.CacheStore.PDF_FONT_METRICS, fSDefaultCacheStore);
-            Resource resource = resourceLoader.getResource("classpath:font/SourceHanSansSC-Regular.ttf");
-            InputStream fontInput = resource.getInputStream();
-            builder.useFont(new FSSupplier<InputStream>() {
-                @Override
-                public InputStream supply() {
-                    return fontInput;
-                }
-            }, "SourceHanSansSC");
-            StreamingResponseBody stream = outputStream -> {
-                builder.toStream(outputStream);
-                builder.run();
-            };
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(stream);
-
-        }
-        catch (Exception e) {
-            return  ResponseEntity.internalServerError().build();
-        }
-    }
 
     public List getMenuList(Integer userTypeId, Integer pid) {
         List sList = new ArrayList();
@@ -188,10 +151,10 @@ public class BaseService {
         List dataList = new ArrayList();
         Integer userTypeId = dataRequest.getInteger("userTypeId");
         if (userTypeId == null) {
-            Integer userId = CommonMethod.getUserId();
-            if (userId == null)
+            Integer personId = CommonMethod.getPersonId();
+            if (personId == null)
                 return CommonMethod.getReturnData(dataList);
-            userTypeId = userRepository.findByUserId(userId).get().getUserType().getId();
+            userTypeId = userRepository.findById(personId).get().getUserType().getId();
         }
         List<MenuInfo> mList = menuInfoRepository.findByUserTypeIds(userTypeId + "");
         Map m;
@@ -344,7 +307,7 @@ public class BaseService {
     public DataResponse updatePassword(DataRequest dataRequest) {
         String oldPassword = dataRequest.getString("oldPassword");  //获取oldPassword
         String newPassword = dataRequest.getString("newPassword");  //获取newPassword
-        Optional<User> op = userRepository.findByUserId(CommonMethod.getUserId());
+        Optional<User> op = userRepository.findById(CommonMethod.getPersonId());
         if (!op.isPresent())
             return CommonMethod.getReturnMessageError("账户不存在！");  //通知前端操作正常
         User u = op.get();
@@ -385,15 +348,6 @@ public class BaseService {
         }
     }
 
-
-    public ResponseEntity<StreamingResponseBody> getPdfData(DataRequest dataRequest) {
-        Integer htmlCount = dataRequest.getInteger("htmlCount");
-        String content = ComDataUtil.getInstance().getHtmlString(htmlCount);
-        String head = "<!DOCTYPE html><html><head><style>html { font-family: \"SourceHanSansSC\", \"Open Sans\";}</style><meta charset='UTF-8' /><title>Insert title here</title></head><body>";
-        content = head + content + "</body></html>";
-        content = CommonMethod.removeErrorString(content, "&nbsp;", "style=\"font-family: &quot;&quot;;\"");
-        return getPdfDataFromHtml(content);
-    }
 
 
     //  Web 请求

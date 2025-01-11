@@ -9,6 +9,7 @@ import cn.edu.sdu.java.server.repositorys.*;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
 import cn.edu.sdu.java.server.util.LoginControlUtil;
+import jakarta.validation.Valid;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,18 +33,16 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserTypeRepository userTypeRepository;
     private final StudentRepository studentRepository;
-    private final TeacherRepository teacherRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordEncoder encoder;
     private final ResourceLoader resourceLoader;
 
-    public AuthService(PersonRepository personRepository, UserRepository userRepository, UserTypeRepository userTypeRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder encoder, ResourceLoader resourceLoader) {
+    public AuthService(PersonRepository personRepository, UserRepository userRepository, UserTypeRepository userTypeRepository, StudentRepository studentRepository,AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder encoder, ResourceLoader resourceLoader) {
         this.personRepository = personRepository;
         this.userRepository = userRepository;
         this.userTypeRepository = userTypeRepository;
         this.studentRepository = studentRepository;
-        this.teacherRepository = teacherRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.encoder = encoder;
@@ -140,10 +138,6 @@ public class AuthService {
             Student s = new Student();   // 创建实体对象
             s.setPerson(p);
             studentRepository.saveAndFlush(s);  //插入新的Student记录
-        }else if("TEACHER".equals(role)) {
-            Teacher t = new Teacher();   // 创建实体对象
-            t.setPerson(p);
-            teacherRepository.saveAndFlush(t);  //插入新的Student记录
         }
         return CommonMethod.getReturnData(LoginControlUtil.getInstance().getValidateCodeDataMap());
     }

@@ -1,7 +1,8 @@
 package cn.edu.sdu.java.server.models;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
+
 /**
  * DictionaryInfo 课程表实体类  保存数据字典的的基本信息信息， 数据库表名 dictionary
  * Integer id 数据字典表  dictionary 主键 id

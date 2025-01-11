@@ -3,10 +3,10 @@ package cn.edu.sdu.java.server.models;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 /**
  * Person人员表实体类 保存人员的基本信息信息， 账户、学生和教师都关联人员，
