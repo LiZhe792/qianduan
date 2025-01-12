@@ -167,6 +167,7 @@ public class StudentService {
             p.setNum(num);
             p.setType("1");
             personRepository.saveAndFlush(p);  //插入新的Person记录
+            personId = p.getPersonId();
             String password = encoder.encode("123456");
             u = new User();
             u.setPersonId(personId);
