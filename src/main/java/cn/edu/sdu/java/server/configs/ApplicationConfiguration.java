@@ -16,11 +16,9 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 
 @Configuration
 public class ApplicationConfiguration {
-    private final UserRepository userRepository;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public ApplicationConfiguration(UserRepository userRepository,UserDetailsServiceImpl userDetailsService) {
-        this.userRepository = userRepository;
+    public ApplicationConfiguration(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
