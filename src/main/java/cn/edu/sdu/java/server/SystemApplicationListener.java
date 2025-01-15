@@ -16,10 +16,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SystemApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
     private final SystemService systemService;  //系统服务对象自动注入
-    private final TestService testService;
-    public SystemApplicationListener(SystemService systemService, TestService testService) {
+    public SystemApplicationListener(SystemService systemService) {
         this.systemService = systemService;
-        this.testService = testService;
     }
 
     /**
