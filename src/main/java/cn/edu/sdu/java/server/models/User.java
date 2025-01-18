@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 
-/**
+/*
  * User用户表实体类 保存每个允许登录的信息人员的账号信息，
  * Integer personId 用户表 user 主键 person_id
  * UserType userType 关联到用户类型对象
@@ -14,7 +14,10 @@ import jakarta.validation.constraints.Size;
  * String password 用户密码 非对称加密，这能加密，无法解码
  *
  */
-
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 @Entity
 @Table(	name = "user",
         uniqueConstraints = {
@@ -25,11 +28,11 @@ public class User {
     private Integer personId;
 
     @ManyToOne()
-    @JoinColumn(name = "user_type_id")
+    @JoinColumn(name = "userTypeId")
     private UserType userType;
 
     @OneToOne
-    @JoinColumn(name="person_id")
+    @JoinColumn(name="personId")
     private Person person;
 
     @NotBlank
@@ -47,84 +50,4 @@ public class User {
     @Size(max = 20)
     private String  createTime;
     private Integer creatorId;
-
-    public User() {
-    }
-
-    public User(String username, String password) {
-        this.userName = username;
-        this.password = password;
-    }
-
-    public Integer getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Integer personId) {
-        this.personId = personId;
-    }
-
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public void setUserType(UserType userType) {
-        this.userType = userType;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getLoginCount() {
-        return loginCount;
-    }
-
-    public void setLoginCount(Integer loginCount) {
-        this.loginCount = loginCount;
-    }
-
-    public String getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(String lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public Integer getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Integer creatorId) {
-        this.creatorId = creatorId;
-    }
 }

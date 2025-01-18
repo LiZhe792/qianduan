@@ -2,12 +2,16 @@ package cn.edu.sdu.java.server.payload.request;
 
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
+/*
  * LoginRequest 登录请求数据类
  * String username 用户名
  * String password 密码
  */
+@Getter
+@Setter
 public class LoginRequest {
     @NotBlank
     private String username;
@@ -15,19 +19,4 @@ public class LoginRequest {
     @NotBlank
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

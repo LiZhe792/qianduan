@@ -35,7 +35,6 @@ public class StudentController {
      * 前台请求参数 numName 学号或名称的 查询串
      * 返回前端 存储学生信息的 MapList 框架会自动将Map转换程用于前后台传输数据的Json对象，Map的嵌套结构和Json的嵌套结构类似
      *
-     * @return
      */
 
 
@@ -87,25 +86,6 @@ public class StudentController {
     }
 
 
-    /**
-     * getStudentScoreList 将Score对象列表集合转换成Score Map对象列表集合
-     *
-     * @param sList
-     * @return
-     */
-
-    /**
-     * getStudentMarkList 计算学生的的成绩等级
-     *
-     * @param sList 学生成绩列表
-     * @return 成绩等级Map对象列表
-     */
-    /**
-     * getStudentFeeList 获取学生的消费Map对象列表集合
-     *
-     * @param personId
-     * @return
-     */
 
     /**
      * importFeeData 前端上传消费流水Excl表数据服务
@@ -114,7 +94,6 @@ public class StudentController {
      * @param uploader     上传者
      * @param personIdStr student 主键
      * @param fileName     前端上传的文件名
-     * @return
      */
     @PostMapping(path = "/importFeeData")
     public DataResponse importFeeData(@RequestBody byte[] barr,
@@ -127,8 +106,6 @@ public class StudentController {
     /**
      * getStudentListExcl 前端下载导出学生基本信息Excl表数据
      *
-     * @param dataRequest
-     * @return
      */
     @PostMapping("/getStudentListExcl")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -167,7 +144,7 @@ public class StudentController {
 
     @PostMapping("/importFeeDataWeb")
     @PreAuthorize("hasRole('STUDENT')")
-    public DataResponse importFeeDataWeb(@RequestParam Map request, @RequestParam("file") MultipartFile file) {
+    public DataResponse importFeeDataWeb(@RequestParam Map<?,?> request, @RequestParam("file") MultipartFile file) {
         return studentService.importFeeDataWeb(request, file);
     }
 

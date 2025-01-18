@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-/**
+/*
  * DictionaryInfo 数据操作接口，主要实现DictionaryInfo数据的查询操作
  * Integer getMaxId()  dictionary 表中的最大的id;    JPQL 注解
  * List<DictionaryInfo> findRootList();  查询获取顶层的数据字典（所有数据字典的code集合） JPQL 注解

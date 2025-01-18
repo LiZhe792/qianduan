@@ -17,6 +17,7 @@ import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -371,13 +372,13 @@ public class BaseService {
         return CommonMethod.getReturnMessageError("下载错误！");
     }
 
-    public DataResponse uploadPhotoWeb(Map pars, MultipartFile file) {
+    public DataResponse uploadPhotoWeb(Map<String,Object> pars, MultipartFile file) {
         try {
             String remoteFile = CommonMethod.getString(pars, "remoteFile");
             InputStream in = file.getInputStream();
             int size = (int) file.getSize();
             byte[] data = new byte[size];
-            in.read(data);
+            int len =  in.read(data);
             in.close();
             OutputStream os = new FileOutputStream(new File(attachFolder + remoteFile));
             os.write(data);

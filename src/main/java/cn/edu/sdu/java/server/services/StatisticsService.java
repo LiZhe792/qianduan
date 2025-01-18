@@ -22,25 +22,24 @@ public class StatisticsService {
     public DataResponse getMainPageData(DataRequest dataRequest) {
         Date day = new Date();
         Date monthDay = DateTimeTool.prevMonth(day);
-        List nList;
         int i;
         Integer id;
-        Object a[];
+        Object[] a;
         Long l;
         String name;
-        Long total = userRepository.count();
+        long total = userRepository.count();
         Integer monthCount = userRepository.countLastLoginTime(DateTimeTool.parseDateTime(monthDay,"yyyy-MM-dd")+" 00:00:00");
         Integer dayCount = userRepository.countLastLoginTime(DateTimeTool.parseDateTime(day,"yyyy-MM-dd")+" 00:00:00");
-        Map data = new HashMap();
-        Map m = new HashMap();
-        m.put("total",total.intValue());
+        Map<String,Object> data = new HashMap<>();
+        Map<String,Object> m = new HashMap<>();
+        m.put("total", (int) total);
         m.put("monthCount",monthCount);
         m.put("dayCount",dayCount);
         data.put("onlineUser", m);
-        nList = userRepository.getCountList();
-        List userTypeList = new ArrayList();
+        List<?> nList = userRepository.getCountList();
+        List<Map<String,Object>> userTypeList = new ArrayList<>();
         for(i= 0;i < nList.size();i++) {
-            m = new HashMap();
+            m = new HashMap<>();
             a = (Object[])nList.get(i);
             id = (Integer)a[0];
             l = (Long)a[1];
@@ -57,14 +56,12 @@ public class StatisticsService {
             userTypeList.add(m);
         }
         data.put("userTypeList", userTypeList);
-        List requestList= new ArrayList();
-        List operateList = new ArrayList();
         List<StatisticsDay>sList = statisticsDayRepository.findListByDay(DateTimeTool.parseDateTime(monthDay,"yyyyMMdd"),DateTimeTool.parseDateTime(day,"yyyyMMdd"));
-        List<String> dayList = new ArrayList();
-        List<String> lList = new ArrayList();
-        List<String> rList = new ArrayList();
-        List<String> cList = new ArrayList();
-        List<String> mList = new ArrayList();
+        List<String> dayList = new ArrayList<>();
+        List<String> lList = new ArrayList<>();
+        List<String> rList = new ArrayList<>();
+        List<String> cList = new ArrayList<>();
+        List<String> mList = new ArrayList<>();
         for(StatisticsDay s:sList) {
             dayList.add(s.getDay());
             lList.add(""+s.getLoginCount());
@@ -72,12 +69,12 @@ public class StatisticsService {
             cList.add(""+s.getCreateCount());
             mList.add(""+s.getLoginCount());
         }
-        m = new HashMap();
+        m = new HashMap<>();
         m.put("value",dayList);
         m.put("label1",lList);
         m.put("label2",rList);
         data.put("requestData", m);
-        m = new HashMap();
+        m = new HashMap<>();
         m.put("value",dayList);
         m.put("label1",cList);
         m.put("label2",mList);

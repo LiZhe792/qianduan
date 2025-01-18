@@ -37,26 +37,22 @@ public class StudentService {
     private final UserRepository userRepository;  //学生数据操作自动注入
     private final UserTypeRepository userTypeRepository; //用户类型数据操作自动注入
     private final PasswordEncoder encoder;  //密码服务自动注入
-    private final ScoreRepository scoreRepository;  //成绩数据操作自动注入
     private final FeeRepository feeRepository;  //消费数据操作自动注入
-    private FamilyMemberRepository familyMemberRepository;
-    private final BaseService baseService;   //基本数据处理数据操作自动注入
+    private final FamilyMemberRepository familyMemberRepository;
     private final SystemService systemService;
-    public StudentService(PersonRepository personRepository, StudentRepository studentRepository, UserRepository userRepository, UserTypeRepository userTypeRepository, PasswordEncoder encoder, ScoreRepository scoreRepository, FeeRepository feeRepository, FamilyMemberRepository familyMemberRepository, BaseService baseService, SystemService systemService) {
+    public StudentService(PersonRepository personRepository, StudentRepository studentRepository, UserRepository userRepository, UserTypeRepository userTypeRepository, PasswordEncoder encoder,  FeeRepository feeRepository, FamilyMemberRepository familyMemberRepository, SystemService systemService) {
         this.personRepository = personRepository;
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.userTypeRepository = userTypeRepository;
         this.encoder = encoder;
-        this.scoreRepository = scoreRepository;
         this.feeRepository = feeRepository;
         this.familyMemberRepository = familyMemberRepository;
-        this.baseService = baseService;
         this.systemService = systemService;
     }
 
-    public Map getMapFromStudent(Student s) {
-        Map m = new HashMap();
+    public Map<String,Object> getMapFromStudent(Student s) {
+        Map<String,Object> m = new HashMap<>();
         Person p;
         if(s == null)
             return m;
@@ -85,20 +81,20 @@ public class StudentService {
     // 需要下列方式注入，否则无法使用， studentRepository 相当于StudentRepository接口实现对象的一个引用，由框架完成对这个引用的赋值，
     // StudentController中的方法可以直接使用
 
-    public List getStudentMapList(String numName) {
-        List dataList = new ArrayList();
+    public List<Map<String,Object>> getStudentMapList(String numName) {
+        List<Map<String,Object>> dataList = new ArrayList<>();
         List<Student> sList = studentRepository.findStudentListByNumName(numName);  //数据库查询操作
-        if (sList == null || sList.size() == 0)
+        if (sList == null || sList.isEmpty())
             return dataList;
-        for (int i = 0; i < sList.size(); i++) {
-            dataList.add(getMapFromStudent(sList.get(i)));
+        for (Student student : sList) {
+            dataList.add(getMapFromStudent(student));
         }
         return dataList;
     }
 
     public DataResponse getStudentList(DataRequest dataRequest) {
         String numName = dataRequest.getString("numName");
-        List dataList = getStudentMapList(numName);
+        List<Map<String,Object>> dataList = getStudentMapList(numName);
         return CommonMethod.getReturnData(dataList);  //按照测试框架规范会送Map的list
     }
 
@@ -106,23 +102,19 @@ public class StudentService {
 
     public DataResponse studentDelete(DataRequest dataRequest) {
         Integer personId = dataRequest.getInteger("personId");  //获取student_id值
-        personId = null;
         Student s = null;
         Optional<Student> op;
-        if (personId != null) {
+        if (personId != null && personId > 0) {
             op = studentRepository.findById(personId);   //查询获得实体对象
-            if (op.isPresent()) {
+            if(op.isPresent()) {
                 s = op.get();
+                Optional<User> uOp = userRepository.findById(personId); //查询对应该学生的账户
+                //删除对应该学生的账户
+                uOp.ifPresent(userRepository::delete);
+                Person p = s.getPerson();
+                studentRepository.delete(s);    //首先数据库永久删除学生信息
+                personRepository.delete(p);   // 然后数据库永久删除学生信息
             }
-        }
-        if (s != null) {
-            Optional<User> uOp = userRepository.findByPersonPersonId(s.getPerson().getPersonId()); //查询对应该学生的账户
-            if (uOp.isPresent()) {
-                userRepository.delete(uOp.get()); //删除对应该学生的账户
-            }
-            Person p = s.getPerson();
-            studentRepository.delete(s);    //首先数据库永久删除学生信息
-            personRepository.delete(p);   // 然后数据库永久删除学生信息
         }
         return CommonMethod.getReturnMessageOK();  //通知前端操作正常
     }
@@ -143,7 +135,7 @@ public class StudentService {
 
     public DataResponse studentEditSave(DataRequest dataRequest) {
         Integer personId = dataRequest.getInteger("personId");
-        Map form = dataRequest.getMap("form"); //参数获取Map对象
+        Map<String,Object> form = dataRequest.getMap("form"); //参数获取Map对象
         String num = CommonMethod.getString(form, "num");  //Map 获取属性的值
         Student s = null;
         Person p;
@@ -183,7 +175,6 @@ public class StudentService {
             isNew = true;
         } else {
             p = s.getPerson();
-            isNew = false;
         }
         personId = p.getPersonId();
         if (!num.equals(p.getNum())) {   //如果人员编号变化，修改人员编号和登录账号
@@ -211,14 +202,14 @@ public class StudentService {
         return CommonMethod.getReturnData(s.getPersonId());  // 将personId返回前端
     }
 
-    public List getStudentScoreList(List<Score> sList) {
-        List list = new ArrayList();
-        if (sList == null || sList.size() == 0)
+    public List<Map<String,Object>> getStudentScoreList(List<Score> sList) {
+        List<Map<String,Object>> list = new ArrayList<>();
+        if (sList == null || sList.isEmpty())
             return list;
-        Map m;
+        Map<String,Object> m;
         Course c;
         for (Score s : sList) {
-            m = new HashMap();
+            m = new HashMap<>();
             c = s.getCourse();
             m.put("studentNum", s.getStudent().getPerson().getNum());
             m.put("scoreId", s.getScoreId());
@@ -233,13 +224,13 @@ public class StudentService {
     }
 
 
-    public List getStudentMarkList(List<Score> sList) {
-        String title[] = {"优", "良", "中", "及格", "不及格"};
-        int count[] = new int[5];
-        List list = new ArrayList();
-        if (sList == null || sList.size() == 0)
+    public List<Map<String,Object>> getStudentMarkList(List<Score> sList) {
+        String[] title = {"优", "良", "中", "及格", "不及格"};
+        int[] count = new int[5];
+        List<Map<String,Object>> list = new ArrayList<>();
+        if (sList == null || sList.isEmpty())
             return list;
-        Map m;
+        Map<String,Object> m;
         Course c;
         for (Score s : sList) {
             c = s.getCourse();
@@ -255,7 +246,7 @@ public class StudentService {
                 count[4]++;
         }
         for (int i = 0; i < 5; i++) {
-            m = new HashMap();
+            m = new HashMap<>();
             m.put("name", title[i]);
             m.put("title", title[i]);
             m.put("value", count[i]);
@@ -265,15 +256,15 @@ public class StudentService {
     }
 
 
-    public List getStudentFeeList(Integer personId) {
+    public List<Map<String,Object>> getStudentFeeList(Integer personId) {
         List<Fee> sList = feeRepository.findListByStudent(personId);  // 查询某个学生消费记录集合
-        List list = new ArrayList();
-        if (sList == null || sList.size() == 0)
+        List<Map<String,Object>> list = new ArrayList<>();
+        if (sList == null || sList.isEmpty())
             return list;
-        Map m;
+        Map<String,Object> m;
         Course c;
         for (Fee s : sList) {
-            m = new HashMap();
+            m = new HashMap<>();
             m.put("title", s.getDay());
             m.put("value", s.getMoney());
             list.add(m);
@@ -296,7 +287,7 @@ public class StudentService {
             i = 1;
             String day, money;
             Optional<Fee> fOp;
-            Double dMoney;
+            double dMoney;
             Fee f;
             rowIterator.next();
             while (rowIterator.hasNext()) {
@@ -308,14 +299,14 @@ public class StudentService {
                 cell = row.getCell(1);
                 money = cell.getStringCellValue();
                 fOp = feeRepository.findByStudentPersonIdAndDay(personId, day);  //查询是否存在记录
-                if (!fOp.isPresent()) {
+                if (fOp.isEmpty()) {
                     f = new Fee();
                     f.setDay(day);
                     f.setStudent(student);  //不存在 添加
                 } else {
                     f = fOp.get();  //存在 更新
                 }
-                if (money != null && money.length() > 0)
+                if (money != null && !money.isEmpty())
                     dMoney = Double.parseDouble(money);
                 else
                     dMoney = 0d;
@@ -344,10 +335,10 @@ public class StudentService {
 
     public ResponseEntity<StreamingResponseBody> getStudentListExcl( DataRequest dataRequest) {
         String numName = dataRequest.getString("numName");
-        List list = getStudentMapList(numName);
-        Integer widths[] = {8, 20, 10, 15, 15, 15, 25, 10, 15, 30, 20, 30};
+        List<Map<String,Object>> list = getStudentMapList(numName);
+        Integer[] widths = {8, 20, 10, 15, 15, 15, 25, 10, 15, 30, 20, 30};
         int i, j, k;
-        String titles[] = {"序号", "学号", "姓名", "学院", "专业", "班级", "证件号码", "性别", "出生日期", "邮箱", "电话", "地址"};
+        String[] titles = {"序号", "学号", "姓名", "学院", "专业", "班级", "证件号码", "性别", "出生日期", "邮箱", "电话", "地址"};
         String outPutSheetName = "student.xlsx";
         XSSFWorkbook wb = new XSSFWorkbook();
         XSSFCellStyle styleTitle = CommonMethod.createCellStyle(wb, 20);
@@ -366,15 +357,15 @@ public class StudentService {
             cell[j].setCellValue(titles[j]);
             cell[j].getCellStyle();
         }
-        Map m;
-        if (list != null && list.size() > 0) {
+        Map<String,Object> m;
+        if (list != null && !list.isEmpty()) {
             for (i = 0; i < list.size(); i++) {
                 row = sheet.createRow(i + 1);
                 for (j = 0; j < widths.length; j++) {
                     cell[j] = row.createCell(j);
                     cell[j].setCellStyle(style);
                 }
-                m = (Map) list.get(i);
+                m = list.get(i);
                 cell[0].setCellValue((i + 1) + "");
                 cell[1].setCellValue(CommonMethod.getString(m, "num"));
                 cell[2].setCellValue(CommonMethod.getString(m, "name"));
@@ -390,9 +381,7 @@ public class StudentService {
             }
         }
         try {
-            StreamingResponseBody stream = outputStream -> {
-                wb.write(outputStream);
-            };
+            StreamingResponseBody stream = wb::write;
             return ResponseEntity.ok()
                     .contentType(CommonMethod.exelType)
                     .body(stream);
@@ -408,16 +397,16 @@ public class StudentService {
         Integer cPage = dataRequest.getCurrentPage();
         int dataTotal = 0;
         int size = 40;
-        List dataList = new ArrayList();
+        List<Map<String,Object>> dataList = new ArrayList<>();
         Page<Student> page = null;
         Pageable pageable = PageRequest.of(cPage, size);
         page = studentRepository.findStudentPageByNumName(numName, pageable);
-        Map m;
+        Map<String,Object> m;
         Student s;
         if (page != null) {
             dataTotal = (int) page.getTotalElements();
             List list = page.getContent();
-            if (list != null && list.size() > 0) {
+            if (!list.isEmpty()) {
                 for (int i = 0; i < list.size(); i++) {
                     s = (Student) list.get(i);
                     m = getMapFromStudent(s);
@@ -425,7 +414,7 @@ public class StudentService {
                 }
             }
         }
-        HashMap data = new HashMap();
+        Map<String,Object> data = new HashMap<>();
         data.put("dataTotal", dataTotal);
         data.put("pageSize", size);
         data.put("dataList", dataList);
@@ -440,11 +429,11 @@ public class StudentService {
     public DataResponse getFamilyMemberList(DataRequest dataRequest) {
         Integer personId = dataRequest.getInteger("personId");
         List<FamilyMember> fList = familyMemberRepository.findByStudentPersonId(personId);
-        List dataList = new ArrayList();
-        Map m;
+        List<Map<String,Object>> dataList = new ArrayList<>();
+        Map<String,Object> m;
         if (fList != null) {
             for (FamilyMember f : fList) {
-                m = new HashMap();
+                m = new HashMap<>();
                 m.put("memberId", f.getMemberId());
                 m.put("personId", f.getStudent().getPersonId());
                 m.put("relation", f.getRelation());
@@ -459,7 +448,7 @@ public class StudentService {
     }
 
     public DataResponse familyMemberSave(DataRequest dataRequest) {
-        Map form = dataRequest.getMap("form");
+        Map<String,Object> form = dataRequest.getMap("form");
         Integer personId = CommonMethod.getInteger(form,"personId");
         Integer memberId = CommonMethod.getInteger(form,"memberId");
         Optional<FamilyMember> op;
@@ -472,6 +461,7 @@ public class StudentService {
         }
         if(f== null) {
             f = new FamilyMember();
+            assert personId != null;
             f.setStudent(studentRepository.findById(personId).get());
         }
         f.setRelation(CommonMethod.getString(form,"relation"));
@@ -487,9 +477,7 @@ public class StudentService {
         Integer memberId = dataRequest.getInteger("memberId");
         Optional<FamilyMember> op;
         op = familyMemberRepository.findById(memberId);
-        if(op.isPresent()) {
-            familyMemberRepository.delete(op.get());
-        }
+        op.ifPresent(familyMemberRepository::delete);
         return CommonMethod.getReturnMessageOK();
     }
 

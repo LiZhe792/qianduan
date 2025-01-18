@@ -44,7 +44,7 @@ public class SystemService {
             value = df.getValue();
             sMap = new HashMap<String, String>();
             dictMapMap.put(value, sMap);
-            itemList = new ArrayList();
+            itemList = new ArrayList<>();
             dictListMap.put(value, itemList);
             sList = dictionaryInfoRepository.findByPid(df.getId());
             for (DictionaryInfo d : sList) {
@@ -59,7 +59,7 @@ public class SystemService {
     }
     public void initSystem() {
         List<SystemInfo> sList = systemInfoRepository.findAll();
-        Map<String,String> map = new HashMap();
+        Map<String,String> map = new HashMap<>();
         for(SystemInfo s:sList) {
             map.put(s.getName(),s.getValue());
         }
@@ -73,7 +73,7 @@ public class SystemService {
         String tableName = o.getClass().getName();
         int index = tableName.lastIndexOf('.');
         if(index > 0) {
-            tableName = tableName.substring(index+1,tableName.length());
+            tableName = tableName.substring(index+1);
         }
         ModifyLog l = new ModifyLog();
         l.setTableName(tableName);

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-/**
+/*
  * User 数据操作接口，主要实现User数据的查询操作
  * Optional<User> findByUserName(String userName);  根据username查询获得Option<User>对象,  命名规范
  * Optional<User> findByPersonNum(String perNum);  根据关联的Person的num查询获得Option<User>对象  命名规范
@@ -29,5 +29,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value="select count(*) from User where lastLoginTime >?1")
     Integer countLastLoginTime(String date);
     @Query(value = "select userType.id, count(personId) from User group by userType.id" )
-    List getCountList();
+    List<?> getCountList();
 }

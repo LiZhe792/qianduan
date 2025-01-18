@@ -235,7 +235,7 @@ public class BaseController {
 
     @PostMapping(value = "/uploadPhotoWeb", consumes = {"multipart/form-data"})
     @PreAuthorize("hasRole('STUDENT') or hasRole('ADMIN')")
-    public DataResponse uploadPhotoWeb(@RequestParam Map pars, @RequestParam("file") MultipartFile file) {
+    public DataResponse uploadPhotoWeb(@RequestParam Map<String,Object> pars, @RequestParam("file") MultipartFile file) {
         return baseService.uploadPhotoWeb(pars, file);
     }
 }

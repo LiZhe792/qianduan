@@ -14,6 +14,10 @@ import jakarta.validation.constraints.Size;
  * String className 班级
  *
  */
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 @Entity
 @Table(	name = "student",
         uniqueConstraints = {
@@ -23,7 +27,7 @@ public class Student {
     private Integer personId;
 
     @OneToOne
-    @JoinColumn(name="person_id")
+    @JoinColumn(name="personId")
     @JsonIgnore
     private Person person;
 
@@ -32,41 +36,5 @@ public class Student {
 
     @Size(max = 50)
     private String className;
-
-    public Integer getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Integer personId) {
-        this.personId = personId;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    public String getMajor() {
-        return major;
-    }
-
-    public void setMajor(String major) {
-        this.major = major;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getNumName(){
-        return person.getNum()+"-" + person.getName();
-    }
 
 }

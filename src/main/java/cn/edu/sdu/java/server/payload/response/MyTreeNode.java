@@ -1,5 +1,8 @@
 package cn.edu.sdu.java.server.payload.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 /**
@@ -10,6 +13,8 @@ import java.util.List;
  * Integer pid 父节点
  * List<MyTreeNode> childList 子节点对象列表
  */
+@Setter
+@Getter
 public class MyTreeNode {
     private Integer id;
     private String value;
@@ -34,75 +39,4 @@ public class MyTreeNode {
         return label;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public Integer getPid() {
-        return pid;
-    }
-
-    public void setPid(Integer pid) {
-        this.pid = pid;
-    }
-
-    public List<MyTreeNode> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<MyTreeNode> children) {
-        this.children = children;
-    }
-
-    public Integer getIsLeaf() {
-        return isLeaf;
-    }
-
-    public void setIsLeaf(Integer isLeaf) {
-        this.isLeaf = isLeaf;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getUserTypeIds() {
-        return userTypeIds;
-    }
-
-    public void setUserTypeIds(String userTypeIds) {
-        this.userTypeIds = userTypeIds;
-    }
-
-    public String getParentTitle() {
-        return parentTitle;
-    }
-
-    public void setParentTitle(String parentTitle) {
-        this.parentTitle = parentTitle;
-    }
 }

@@ -27,8 +27,7 @@ public class ScoreService {
     }
     public OptionItemList getStudentItemOptionList( DataRequest dataRequest) {
         List<Student> sList = studentRepository.findStudentListByNumName("");  //数据库查询操作
-        OptionItem item;
-        List<OptionItem> itemList = new ArrayList();
+        List<OptionItem> itemList = new ArrayList<>();
         for (Student s : sList) {
             itemList.add(new OptionItem( s.getPersonId(),s.getPersonId()+"", s.getPerson().getNum()+"-"+s.getPerson().getName()));
         }
@@ -37,8 +36,7 @@ public class ScoreService {
 
     public OptionItemList getCourseItemOptionList(DataRequest dataRequest) {
         List<Course> sList = courseRepository.findAll();  //数据库查询操作
-        OptionItem item;
-        List<OptionItem> itemList = new ArrayList();
+        List<OptionItem> itemList = new ArrayList<>();
         for (Course c : sList) {
             itemList.add(new OptionItem(c.getCourseId(),c.getCourseId()+"", c.getNum()+"-"+c.getName()));
         }
@@ -53,10 +51,10 @@ public class ScoreService {
         if(courseId == null)
             courseId = 0;
         List<Score> sList = scoreRepository.findByStudentCourse(personId, courseId);  //数据库查询操作
-        List dataList = new ArrayList();
-        Map m;
+        List<Map<String,Object>> dataList = new ArrayList<>();
+        Map<String,Object> m;
         for (Score s : sList) {
-            m = new HashMap();
+            m = new HashMap<>();
             m.put("scoreId", s.getScoreId()+"");
             m.put("personId",s.getStudent().getPersonId()+"");
             m.put("courseId",s.getCourse().getCourseId()+"");

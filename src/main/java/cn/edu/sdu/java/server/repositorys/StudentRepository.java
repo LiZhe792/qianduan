@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-/**
+/*
  * Student 数据操作接口，主要实现Person数据的查询操作
  * Integer getMaxId()  Student 表中的最大的student_id;    JPQL 注解
  * Optional<Student> findByPersonPersonId(Integer personId); 根据关联的Person的personId查询获得Option<Student>对象 命名规范

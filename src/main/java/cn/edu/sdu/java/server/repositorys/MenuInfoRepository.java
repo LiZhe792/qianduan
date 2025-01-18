@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-/**
+/*
  * MenuInfo 数据操作接口，主要实现MenuInfo数据的查询操作
  * Integer getMaxId()  menu 表中的最大的menu_id;    JPQL 注解
  * Optional<Person> findByNum(String num);  根据num查询获得Option<Person>对象,  命名规范

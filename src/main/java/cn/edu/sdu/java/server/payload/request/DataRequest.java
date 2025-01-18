@@ -2,26 +2,22 @@ package cn.edu.sdu.java.server.payload.request;
 
 
 import cn.edu.sdu.java.server.util.DateTimeTool;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 
-/**
+/*
  * DataRequest 请求参数数据类
  * Map data 保存前端请求参数的Map集合
  */
+@Getter
+@Setter
 public class DataRequest {
-    private Map data;
+    private Map<String,Object> data;
 
     public DataRequest() {
-        data = new HashMap();
-    }
-
-    public Map getData() {
-        return data;
-    }
-
-    public void setData(Map data) {
-        this.data = data;
+        data = new HashMap<>();
     }
 
     public void add(String key, Object obj){
@@ -45,31 +41,28 @@ public class DataRequest {
             return false;
         if(obj instanceof Boolean)
             return (Boolean)obj;
-        if("true".equals(obj.toString()))
-            return true;
-        else
-            return false;
+        return "true".equals(obj.toString());
     }
 
-    public List getList(String key){
+    public List<?> getList(String key){
         Object obj = data.get(key);
         if(obj == null)
-            return new ArrayList();
+            return new ArrayList<>();
         if(obj instanceof List)
-            return (List)obj;
+            return (List<?>)obj;
         else
-            return new ArrayList();
+            return new ArrayList<>();
     }
-    public Map getMap(String key){
+    public Map<String,Object> getMap(String key){
         if(data == null)
-            return new HashMap();
+            return new HashMap<>();
         Object obj = data.get(key);
         if(obj == null)
-            return new HashMap();
+            return new HashMap<>();
         if(obj instanceof Map)
-            return (Map)obj;
+            return (Map<String,Object>)obj;
         else
-            return new HashMap();
+            return new HashMap<>();
     }
 
     public Integer getInteger(String key) {
