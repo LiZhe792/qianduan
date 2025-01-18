@@ -7,11 +7,11 @@ import cn.edu.sdu.java.server.repositorys.*;
 import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.List;
 
 @Service
 public class StudentService {
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
     private final PersonRepository personRepository;  //人员数据操作自动注入
     private final StudentRepository studentRepository;  //学生数据操作自动注入
     private final UserRepository userRepository;  //学生数据操作自动注入
@@ -316,7 +314,7 @@ public class StudentService {
             workbook.close();  //关闭Excl输入流
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return "上传错误！";
         }
 
@@ -349,7 +347,7 @@ public class StudentService {
         //合并第一行
         XSSFCellStyle style = CommonMethod.createCellStyle(wb, 11);
         XSSFRow row = null;
-        XSSFCell cell[] = new XSSFCell[widths.length];
+        XSSFCell[] cell = new XSSFCell[widths.length];
         row = sheet.createRow((int) 0);
         for (j = 0; j < widths.length; j++) {
             cell[j] = row.createCell(j);
@@ -402,14 +400,12 @@ public class StudentService {
         Pageable pageable = PageRequest.of(cPage, size);
         page = studentRepository.findStudentPageByNumName(numName, pageable);
         Map<String,Object> m;
-        Student s;
         if (page != null) {
             dataTotal = (int) page.getTotalElements();
-            List list = page.getContent();
+            List<Student> list = page.getContent();
             if (!list.isEmpty()) {
-                for (int i = 0; i < list.size(); i++) {
-                    s = (Student) list.get(i);
-                    m = getMapFromStudent(s);
+                for (Student student : list) {
+                    m = getMapFromStudent(student);
                     dataList.add(m);
                 }
             }
@@ -482,7 +478,7 @@ public class StudentService {
     }
 
 
-    public DataResponse importFeeDataWeb(Map request,MultipartFile file) {
+    public DataResponse importFeeDataWeb(Map<String,Object> request,MultipartFile file) {
         Integer personId = CommonMethod.getInteger(request, "personId");
         try {
             String msg= importFeeData(personId,file.getInputStream());
@@ -491,7 +487,7 @@ public class StudentService {
             else
                 return CommonMethod.getReturnMessageError(msg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return CommonMethod.getReturnMessageError("上传错误！");
     }

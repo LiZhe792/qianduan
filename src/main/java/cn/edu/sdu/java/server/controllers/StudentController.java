@@ -144,7 +144,7 @@ public class StudentController {
 
     @PostMapping("/importFeeDataWeb")
     @PreAuthorize("hasRole('STUDENT')")
-    public DataResponse importFeeDataWeb(@RequestParam Map<?,?> request, @RequestParam("file") MultipartFile file) {
+    public DataResponse importFeeDataWeb(@RequestParam Map<String,Object> request, @RequestParam("file") MultipartFile file) {
         return studentService.importFeeDataWeb(request, file);
     }
 

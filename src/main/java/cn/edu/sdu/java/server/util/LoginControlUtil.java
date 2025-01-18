@@ -1,5 +1,8 @@
 package cn.edu.sdu.java.server.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -7,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.*;
 
 public class LoginControlUtil {
+    private static final Logger log = LoggerFactory.getLogger(LoginControlUtil.class);
     /** 验证码图片的宽度 */
     private int width = 54;
     /** 验证码图片的高度 */
@@ -29,7 +33,7 @@ public class LoginControlUtil {
     public static LoginControlUtil getInstance(){
         return instance;
     }
-    public Map getValidateCodeDataMap(){
+    public Map<String, Object> getValidateCodeDataMap(){
         BufferedImage buffImg = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = buffImg.createGraphics();
@@ -60,7 +64,7 @@ public class LoginControlUtil {
         }
 */
         // randomCode用于保存随机产生的验证码，以便用户登录后进行验证。
-        StringBuffer randomCode = new StringBuffer();
+        StringBuilder randomCode = new StringBuilder();
         int red = 0, green = 0, blue = 0;
 
         // 随机产生codeCount数字的验证码。
@@ -83,7 +87,7 @@ public class LoginControlUtil {
         Integer validateCodeId = random.nextInt();
         String  validateCode = randomCode.toString();
         codeMap.put(validateCodeId, validateCode);
-        Map data = new HashMap();
+        Map<String,Object> data = new HashMap<>();
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(buffImg, "jpeg", out);
@@ -94,7 +98,7 @@ public class LoginControlUtil {
             data.put("validateCodeId", validateCodeId);
             data.put("img",imgStr);
         }catch(Exception e) {
-            e.printStackTrace();
+            log.error("getValidateCodeDataMap error",e);
         }
         return data;
     }
