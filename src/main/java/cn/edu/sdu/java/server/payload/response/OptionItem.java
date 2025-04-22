@@ -15,17 +15,18 @@ public class OptionItem {
     private Integer id;
     private String value;
     private String title;
-    public OptionItem(){
 
+    public OptionItem() {
     }
-    public OptionItem(Integer id, String value, String title){
+
+    public OptionItem(Integer id, String value, String title) {
         this.id = id;
         this.value = value;
         this.title = title;
     }
 
-    public String toString(){
+    @Override
+    public String toString() {
         return title;
     }
-
 }

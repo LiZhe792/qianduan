@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
-import java.util.List;
 
 @Service
 public class StudentService {
@@ -38,6 +37,7 @@ public class StudentService {
     private final FeeRepository feeRepository;  //消费数据操作自动注入
     private final FamilyMemberRepository familyMemberRepository;
     private final SystemService systemService;
+
     public StudentService(PersonRepository personRepository, StudentRepository studentRepository, UserRepository userRepository, UserTypeRepository userTypeRepository, PasswordEncoder encoder,  FeeRepository feeRepository, FamilyMemberRepository familyMemberRepository, SystemService systemService) {
         this.personRepository = personRepository;
         this.studentRepository = studentRepository;
@@ -96,8 +96,6 @@ public class StudentService {
         return CommonMethod.getReturnData(dataList);  //按照测试框架规范会送Map的list
     }
 
-
-
     public DataResponse studentDelete(DataRequest dataRequest) {
         Integer personId = dataRequest.getInteger("personId");  //获取student_id值
         Student s = null;
@@ -116,7 +114,6 @@ public class StudentService {
         }
         return CommonMethod.getReturnMessageOK();  //通知前端操作正常
     }
-
 
     public DataResponse getStudentInfo(DataRequest dataRequest) {
         Integer personId = dataRequest.getInteger("personId");
@@ -221,7 +218,6 @@ public class StudentService {
         return list;
     }
 
-
     public List<Map<String,Object>> getStudentMarkList(List<Score> sList) {
         String[] title = {"优", "良", "中", "及格", "不及格"};
         int[] count = new int[5];
@@ -253,7 +249,6 @@ public class StudentService {
         return list;
     }
 
-
     public List<Map<String,Object>> getStudentFeeList(Integer personId) {
         List<Fee> sList = feeRepository.findListByStudent(personId);  // 查询某个学生消费记录集合
         List<Map<String,Object>> list = new ArrayList<>();
@@ -269,9 +264,6 @@ public class StudentService {
         }
         return list;
     }
-
-
-
 
     public String importFeeData(Integer personId, InputStream in){
         try {
@@ -317,12 +309,11 @@ public class StudentService {
             log.error(e.getMessage());
             return "上传错误！";
         }
-
     }
 
     public DataResponse importFeeData(@RequestBody byte[] barr,
                                       String personIdStr
-                                      ) {
+    ) {
         Integer personId =  Integer.parseInt(personIdStr);
         String msg = importFeeData(personId,new ByteArrayInputStream(barr));
         if(msg == null)
@@ -387,7 +378,6 @@ public class StudentService {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-
     }
 
     public DataResponse getStudentPageData(DataRequest dataRequest) {
@@ -416,8 +406,6 @@ public class StudentService {
         data.put("dataList", dataList);
         return CommonMethod.getReturnData(data);
     }
-
-
 
     /*
         FamilyMember
@@ -477,7 +465,6 @@ public class StudentService {
         return CommonMethod.getReturnMessageOK();
     }
 
-
     public DataResponse importFeeDataWeb(Map<String,Object> request,MultipartFile file) {
         Integer personId = CommonMethod.getInteger(request, "personId");
         try {
@@ -492,4 +479,25 @@ public class StudentService {
         return CommonMethod.getReturnMessageError("上传错误！");
     }
 
+    // 新增方法：根据学号查询 PersonId
+    public DataResponse getPersonIdByStudentNum(DataRequest dataRequest) {
+        String studentNum = dataRequest.getString("studentNum");
+        DataResponse dataResponse = new DataResponse();
+        Map<String, String> form = new HashMap<>();
+        // 通过 StudentRepository 的 findByPersonNum 方法查询学生（Person 的 num 对应学号）
+        Optional<Student> studentOptional = studentRepository.findByPersonNum(studentNum);
+        if(studentOptional.isPresent()) {
+            Student student = studentOptional.get();
+            form.put("personId", student.getPersonId().toString());
+            dataResponse.setData(form);
+            dataResponse.setCode(0);
+            dataResponse.setMsg("Successful!");
+            return dataResponse;
+        } else {
+            dataResponse.setCode(1);
+            dataResponse.setMsg("未找到该学号对应的学生！请检查学号！");
+            return dataResponse;
+        }
+
+    }
 }

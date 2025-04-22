@@ -4,17 +4,17 @@ security:
     secret-key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
     expiration-time: 86400000
 server:
-  port: 22222
+  port: 22223
 spring:
   application:
     name: java-server
   datasource:
-    url: jdbc:mysql://202.194.14.120:3306/java_db?allowPublicKeyRetrieval=true&useSSL=false
-    username: java_server
-    password: JavaServer2025@
-#    url: jdbc:mysql://202.194.14.120:3306/java_1_01?allowPublicKeyRetrieval=true&useSSL=false
-#    username: java_1_01
-#    password: JavaP101@
+#    url: jdbc:mysql://202.194.14.120:3306/java_db?allowPublicKeyRetrieval=true&useSSL=false
+#    username: java_server
+#    password: JavaServer2025@
+    url: jdbc:mysql://202.194.14.120:3306/java_2_09?allowPublicKeyRetrieval=true&useSSL=false
+    username: java_2_09
+    password: JavaP209@
   jpa:
     generate-ddl: true
     hibernate.ddl-auto: update

@@ -1,10 +1,10 @@
 package cn.edu.sdu.java.server.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Student学生表实体类 保存每个学生的信息，
@@ -14,12 +14,10 @@ import jakarta.validation.constraints.Size;
  * String className 班级
  *
  */
-import lombok.Getter;
-import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(	name = "student",
+@Table(name = "student",
         uniqueConstraints = {
         })
 public class Student {
@@ -27,7 +25,7 @@ public class Student {
     private Integer personId;
 
     @OneToOne
-    @JoinColumn(name="personId")
+    @JoinColumn(name = "personId")
     @JsonIgnore
     private Person person;
 
@@ -36,5 +34,4 @@ public class Student {
 
     @Size(max = 50)
     private String className;
-
 }

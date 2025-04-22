@@ -15,7 +15,8 @@ public class DataResponse {
     private Integer code;
     private Object data;
     private String msg;
-    public DataResponse(){
+
+    public DataResponse() {
 
     }
 
@@ -25,4 +26,11 @@ public class DataResponse {
         this.msg = msg;
     }
 
+    public static DataResponse success(Object data) {
+        return new DataResponse(0, data, "成功");
+    }
+
+    public static DataResponse error(String msg) {
+        return new DataResponse(1, null, msg);
+    }
 }
