@@ -5,6 +5,8 @@ import com.teach.javafx.request.OptionItem;
 /**
  * CommonMethod 公共处理方法实例类
  */
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class CommonMethod {
@@ -240,4 +242,16 @@ public class CommonMethod {
         }
         return iList;
     }
+
+    // 定义日期格式
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    // 格式化 LocalDate 对象为字符串
+    public static String formatDate(LocalDate date) {
+        if (date == null) {
+            return null;
+        }
+        return date.format(DATE_FORMATTER);
+    }
+
 }

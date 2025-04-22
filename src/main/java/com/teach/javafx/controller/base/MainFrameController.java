@@ -2,6 +2,7 @@ package com.teach.javafx.controller.base;
 
 import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
+import com.teach.javafx.controller.ToolController;
 import com.teach.javafx.request.HttpRequestUtil;
 import com.teach.javafx.request.MyTreeNode;
 import javafx.event.ActionEvent;
@@ -36,7 +37,7 @@ public class MainFrameController {
     }
     private Map<String,Tab> tabMap = new HashMap<String,Tab>();
     private Map<String,Scene> sceneMap = new HashMap<String,Scene>();
-    private Map<String,ToolController> controlMap =new HashMap<String,ToolController>();
+    private Map<String, ToolController> controlMap =new HashMap<String,ToolController>();
     @FXML
     private MenuBar menuBar;
     @FXML

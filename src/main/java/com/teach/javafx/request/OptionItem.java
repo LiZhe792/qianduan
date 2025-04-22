@@ -55,4 +55,8 @@ public class OptionItem {
     public String toString(){
         return title;
     }
+
+    public String getLabel() {
+        return title;
+    }
 }

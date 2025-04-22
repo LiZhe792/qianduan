@@ -21,7 +21,7 @@ import java.util.Map;
 public class HttpRequestUtil {
     private static final Gson gson = new Gson();
     private static final HttpClient client = HttpClient.newHttpClient();
-    public static String serverUrl = "http://localhost:22222";
+    public static String serverUrl = "http://localhost:22223";
 //    public static String serverUrl = "http://202.194.7.29:22222";
 
     /**
