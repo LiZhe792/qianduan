@@ -1,6 +1,7 @@
 package cn.edu.sdu.java.server.repositorys;
 
 import cn.edu.sdu.java.server.models.Student;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +31,10 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     @Query(value = "from Student where ?1='' or person.num like %?1% or person.name like %?1% ",
             countQuery = "SELECT count(personId) from Student where ?1='' or person.num like %?1% or person.name like %?1% ")
     Page<Student> findStudentPageByNumName(String numName, Pageable pageable);
+
+    @Query(value = "select student from Student student where student.person.num = :num")
+    Optional<Student> findStudentByNum(@Param("num") String num);
+
+//    @Query(value = "select student from Student student where student.person.")
+//    Student findByStudentId(Integer studentId);
 }
