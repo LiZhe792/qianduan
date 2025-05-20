@@ -108,18 +108,21 @@ public class CommonMethod {
         }
     }
 
-    public static Double getDouble(Map<String,Object> data,String key) {
-        if(data == null)
+    public static Double getDouble(Map<String, Object> data, String key) {
+        if (data == null || key == null) {
             return null;
+        }
         Object obj = data.get(key);
-        if(obj == null)
+        if (obj == null) {
             return null;
-        if(obj instanceof Double)
-            return (Double)obj;
+        }
+        if (obj instanceof Double) {
+            return (Double) obj;
+        }
         String str = obj.toString();
         try {
-            return 0d;
-        }catch(Exception e) {
+            return Double.parseDouble(str);
+        } catch (NumberFormatException e) {
             return null;
         }
     }
@@ -252,6 +255,13 @@ public class CommonMethod {
             return null;
         }
         return date.format(DATE_FORMATTER);
+    }
+
+    public static LocalDate localDateFromString(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return null;
+        }
+        return LocalDate.parse(dateStr, DATE_FORMATTER);
     }
 
 }

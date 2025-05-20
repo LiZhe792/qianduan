@@ -16,18 +16,25 @@ public class OptionItem {
     private String title;
 
     public OptionItem(){
-
     }
+
+    public OptionItem(String value, String title){
+        this.value = value;
+        this.title = title;
+    }
+
     public OptionItem(Integer id, String value, String title){
         this.id = id;
         this.value = value;
         this.title = title;
     }
+
     public OptionItem(Map<String,Object> map){
         this.id = CommonMethod.getInteger(map,"id");
         this.value = CommonMethod.getString(map,"value");
         this.title = CommonMethod.getString(map,"title");
     }
+
     public Integer getId() {
         return id;
     }
